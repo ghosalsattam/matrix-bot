@@ -97,5 +97,6 @@ export async function postMessage(roomId, body){
 		return {message: "Successfully sent the message.", timestamp: moment().utcOffset("+05:30").format("YYYY-MM-DDTHH:mm:ssZ")}
 	}catch(error){
 		console.log('\u001b[31m', error);
+		throw {message: "Internal server error"}
 	}
 }
