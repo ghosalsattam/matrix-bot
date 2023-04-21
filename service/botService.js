@@ -62,7 +62,7 @@ export async function getMessagesService(roomId, res) {
     if(error.httpStatus===401){
       throw respondWithCode(401, {message: "Invalid Authentication"})
     }
-    throw respondWithCode(500, {message: "Internal Server Error. Check the server url."})
+    throw respondWithCode(500, {message: "Internal Server Error. Check the server/room configurations."})
   }
 }
 
@@ -84,7 +84,7 @@ export async function postMessagesService(roomId, body) {
     if(error.httpStatus===401){
       throw respondWithCode(401, {message: "Invalid Authentication"})
     }
-    throw respondWithCode(500, {message: "Internal Server Error. Check the server url."})
+    throw respondWithCode(500, {message: "Internal Server Error. Check the server/room configurations."})
   }
 }
 
