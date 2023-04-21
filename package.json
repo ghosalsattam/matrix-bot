@@ -22,7 +22,6 @@
     "js-yaml": "^3.3.0",
     "matrix-js-sdk": "^24.1.0",
     "moment": "^2.29.4",
-    "oas3-tools": "^2.2.3",
-    "olm": "https://packages.matrix.org/npm/olm/olm-3.1.4.tgz"
+    "oas3-tools": "^2.2.3"
   }
 }
