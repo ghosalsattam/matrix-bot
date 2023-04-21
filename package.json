@@ -2,7 +2,7 @@
   "name": "matrix-bot-management-microservice",
   "version": "1.7.2",
   "type": "module",
-  "description": "This is a set of Admin APIs for Matrix Bot Provisioning.",
+  "description": "This is a set of APIs for Matrix Bot Provisioning.",
   "main": "index.js",
   "scripts": {
     "prestart": "npm install",
@@ -22,6 +22,10 @@
     "js-yaml": "^3.3.0",
     "matrix-js-sdk": "^24.1.0",
     "moment": "^2.29.4",
-    "oas3-tools": "^2.2.3"
+    "node-fetch": "^3.3.1",
+    "oas3-tools": "^2.2.3",
+    "path": "^0.12.7",
+    "swagger-ui-express": "^4.6.2",
+    "yaml": "^2.2.1"
   }
 }

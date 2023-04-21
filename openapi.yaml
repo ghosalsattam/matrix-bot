@@ -4,7 +4,7 @@ info:
   description: This is a set of Admin APIs for Matrix Bot Provisioning.
   license:
     name: Alef Edge
-  version: 1.7.2
+  version: 1.0.0
 servers:
 - url: http://localhost:8000
   description: Localhost Url
@@ -33,9 +33,12 @@ paths:
               examples:
                 Return all the active rooms on the matrix server:
                   value:
-                  - room_name: Test_Discussion_Room
-                    room_id: '!QyQABdNkiOxtPItUeV:matrix.org'
-                  - room_name: Dev_Discussion_Room
+                  - room_id: "!wYawmIrjNAYNuIxBCy:matrix.org"
+                    room_name: Coding
+                    no_of_members: 1
+                    join_rule: invite
+                    world_readable: false
+                    encryption: m.megolm.v1.aes-sha2
         "401":
           description: Unauthorized user
           content:
@@ -48,19 +51,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
-        "422":
-          description: unprocessable entry
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_422'
-              examples:
-                Invalid account_id:
-                  value:
-                    message: Invalid account_id
-                Invalid EPC provider:
-                  value:
-                    message: Invalid epc_provider
         "500":
           description: Error in db connection
           content:
@@ -74,7 +64,7 @@ paths:
     get:
       tags:
       - Public
-      summary: Fetch Available channels for the given matrix server.
+      summary: Fetch Available channels for the given room in the matrix server. Only the messages that are unencrypted will be fetched.
       description: |
         Fetch Available channels for the given matrix server.
       operationId: getMessages
@@ -121,12 +111,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_422'
               examples:
-                Invalid account_id:
+                Invalid room:
                   value:
-                    message: Invalid account_id
-                Invalid EPC provider:
-                  value:
-                    message: Invalid epc_provider
+                    message: Invalid room
         "500":
           description: Error in db connection
           content:
@@ -136,6 +123,75 @@ paths:
       security:
       - ApiKeyAuth: []
       x-swagger-router-controller: Public
+    post:
+      tags:
+      - Public
+      summary: Post a new message to the channels.
+      description: |
+        Post a new unencrypted message to the channel.
+      operationId: postMessages
+      parameters:
+      - name: roomId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  message:
+                      type: string
+                      example: Some random message
+      responses:
+        "200":
+          description: Successfully posted the message to the channel.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                x-content-type: application/json
+              examples:
+                Successfully Posted the message:
+                  value:
+                  - message: Successfully posted the message
+                    timestamp: "2023-04-01T12:11:45"
+        "401":
+          description: Unauthorized user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
+        "404":
+          description: Incorrect endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "422":
+          description: unprocessable entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_422'
+              examples:
+                Invalid room:
+                  value:
+                    message: Invalid room
+        "500":
+          description: Error in db connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+      security:
+      - ApiKeyAuth: []
+      x-swagger-router-controller: Public
+    
 components:
   schemas:
     UnexpectedErrorResponse:
@@ -155,7 +211,7 @@ components:
         message:
           type: string
       example:
-        message: Authorization Error
+        message: Invalid Authentication
     inline_response_404:
       properties:
         message:
@@ -172,7 +228,7 @@ components:
           example: 500
         message:
           type: string
-          example: Error to connect DB Server
+          example: Internal Server Error
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

@@ -1,5 +1,6 @@
 'use strict';
-import { getAllRooms, getRoomInfo, getHistoricalMessages, getLiveMessages } from "../interface/matrix.client.js";
+import { getAllRooms, getRoomInfo, getHistoricalMessages, postMessage } from "../interface/matrix.client.js";
+import { respondWithCode } from "../utils/writer.js";
 
 /**
  * Fetch Available channels for the given matrix server.
@@ -25,10 +26,16 @@ export async function getAllRoomsService() {
         roomArray.push(roomMetadata);
       };
     }
+    if(!roomArray.length){
+      throw respondWithCode(404, {message: "Rooms are not available for the given account"})
+    }
     return roomArray;
   }catch(error){
-    console.log(error);
-    throw({code: 500, message: "Internal Server Error"})
+    console.log('\u001b[31m',error);
+    if(error.httpStatus===401){
+      throw respondWithCode(401, {message: "Invalid Authentication"})
+    }
+    throw respondWithCode(500, {message: "Internal Server Error. Please check the base url."})
   }
 }
 
@@ -38,10 +45,46 @@ export async function getAllRoomsService() {
  * Fetch Available channels for the given matrix server. 
  *
  * roomId String 
- * returns List
+ * returns List of messages.
  **/
 export async function getMessagesService(roomId, res) {
-  var room=getHistoricalMessages(roomId, res);
-  return room;
+  try{
+    var room=await getHistoricalMessages(roomId, res);
+    if(!room.length){
+      return respondWithCode(404,{message: `No messages on the room ${roomId} yet`})
+    }
+    return respondWithCode(200, {messages: room});
+  }catch(error){
+    console.log('\u001b[31m', error);
+    if(error.httpStatus===403){
+      throw respondWithCode(422, {message: error.data.error})
+    }
+    if(error.httpStatus===401){
+      throw respondWithCode(401, {message: "Invalid Authentication"})
+    }
+    throw respondWithCode(500, {message: "Internal Server Error. Check the server url."})
+  }
+}
+
+/**
+ * Sends message to a channel
+ * @param {string} roomId: room id 
+ * @param {object} body: object containing the message to be sent. 
+ * @returns 
+ */
+export async function postMessagesService(roomId, body) {
+  try{
+    let res=await postMessage(roomId, body);
+    return res;
+  }catch(error){
+    console.log('\u001b[31m', error);
+    if(error.httpStatus===403){
+      throw respondWithCode(422, {message: error.data.error})
+    }
+    if(error.httpStatus===401){
+      throw respondWithCode(401, {message: "Invalid Authentication"})
+    }
+    throw respondWithCode(500, {message: "Internal Server Error. Check the server url."})
+  }
 }
 
