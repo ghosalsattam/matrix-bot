@@ -1,0 +1,180 @@
+openapi: 3.0.3
+info:
+  title: Matrix Bot Management Microservice
+  description: This is a set of Admin APIs for Matrix Bot Provisioning.
+  license:
+    name: Alef Edge
+  version: 1.7.2
+servers:
+- url: http://localhost:8000
+  description: Localhost Url
+tags:
+- name: Public
+  description: APIs for Management of the matrix Bot.
+paths:
+  /matrix/v1/bot/rooms:
+    get:
+      tags:
+      - Public
+      summary: Fetch Available channels for the given matrix server.
+      description: |
+        Fetch Available channels for the given matrix server.
+      operationId: getAllRooms
+      responses:
+        "200":
+          description: Successfully returned all available rooms.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                x-content-type: application/json
+              examples:
+                Return all the active rooms on the matrix server:
+                  value:
+                  - room_name: Test_Discussion_Room
+                    room_id: '!QyQABdNkiOxtPItUeV:matrix.org'
+                  - room_name: Dev_Discussion_Room
+        "401":
+          description: Unauthorized user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
+        "404":
+          description: Incorrect endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "422":
+          description: unprocessable entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_422'
+              examples:
+                Invalid account_id:
+                  value:
+                    message: Invalid account_id
+                Invalid EPC provider:
+                  value:
+                    message: Invalid epc_provider
+        "500":
+          description: Error in db connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+      security:
+      - ApiKeyAuth: []
+      x-swagger-router-controller: Public
+  /matrix/v1/bot/rooms/{roomId}:
+    get:
+      tags:
+      - Public
+      summary: Fetch Available channels for the given matrix server.
+      description: |
+        Fetch Available channels for the given matrix server.
+      operationId: getMessages
+      parameters:
+      - name: roomId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successfully returned all available rooms.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                x-content-type: application/json
+              examples:
+                Return all the active rooms on the matrix server:
+                  value:
+                  - room_name: Test_Discussion_Room
+                    room_id: '!QyQABdNkiOxtPItUeV:matrix.org'
+                  - room_name: Dev_Discussion_Room
+        "401":
+          description: Unauthorized user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
+        "404":
+          description: Incorrect endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "422":
+          description: unprocessable entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_422'
+              examples:
+                Invalid account_id:
+                  value:
+                    message: Invalid account_id
+                Invalid EPC provider:
+                  value:
+                    message: Invalid epc_provider
+        "500":
+          description: Error in db connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+      security:
+      - ApiKeyAuth: []
+      x-swagger-router-controller: Public
+components:
+  schemas:
+    UnexpectedErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Internal server error.
+    BadRequestResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    UnauthorizedResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Authorization Error
+    inline_response_404:
+      properties:
+        message:
+          type: string
+          example: Resource not found.
+    inline_response_422:
+      properties:
+        message:
+          type: string
+    inline_response_500:
+      properties:
+        status:
+          type: number
+          example: 500
+        message:
+          type: string
+          example: Error to connect DB Server
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: apikey
+      in: query
