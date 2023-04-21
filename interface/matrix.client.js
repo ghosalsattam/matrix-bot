@@ -1,7 +1,6 @@
 import sdk from "matrix-js-sdk";
 import fetch from "node-fetch"
 import moment from "moment";
-import clc from "cli-color";
 globalThis.fetch = fetch
 
 var client = sdk.createClient({
