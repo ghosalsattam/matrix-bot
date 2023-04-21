@@ -64,9 +64,9 @@ paths:
     get:
       tags:
       - Public
-      summary: Fetch Available channels for the given room in the matrix server. Only the messages that are unencrypted will be fetched.
+      summary: Fetch Available messages for the given room in the matrix server. Only the messages that are unencrypted will be fetched.
       description: |
-        Fetch Available channels for the given matrix server.
+        Fetch Available messages for the given room of the matrix server.
       operationId: getMessages
       parameters:
       - name: roomId
